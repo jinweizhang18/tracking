@@ -315,14 +315,12 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         d = DiscreteDistribution()
-        for newPos in self.allPositions:
-            s = 0
-            for oldPos in self.allPositions:
-                newPosDist = self.getPositionDistribution(gameState, oldPos)
-                s += self.beliefs[oldPos] * newPosDist[newPos]
-            d[newPos] = s
+        for oldPos in self.allPositions:
+            newPosDist = self.getPositionDistribution(gameState, oldPos)
+            for newPos in self.allPositions:
+                d[newPos] += self.beliefs[oldPos] * newPosDist[newPos]
 
-        self.beliefs = d    
+        self.beliefs = d
         self.beliefs.normalize()
 
     def getBeliefDistribution(self):
