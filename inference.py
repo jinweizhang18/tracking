@@ -186,7 +186,7 @@ class InferenceModule:
                 return 1
             else:
                 return 0
-        
+
         trueDistance = manhattanDistance(pacmanPosition, ghostPosition)
         return busters.getObservationProbability(noisyDistance, trueDistance)
 
@@ -297,8 +297,11 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        jail = self.getJailPosition()
+        pac = gameState.getPacmanPosition()
+        for p in self.allPositions:
+            numerator = self.beliefs[p] * self.getObservationProb(observation,pac,p,jail)
+            self.beliefs[p] = numerator
 
         self.beliefs.normalize()
 
