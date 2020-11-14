@@ -507,15 +507,27 @@ class JointParticleFilter(ParticleFilter):
         Sample each particle's next state based on its current state and the
         gameState.
         """
+
+        # newParticles = []
+        # for oldPos in self.particles:
+        #     newPosDist = self.getPositionDistribution(gameState, oldPos)
+        #     sample = newPosDist.sample()
+        #     newParticles.append(sample)
+        #
+        # self.particles = newParticles
+
+
+        ""
         newParticles = []
         for oldParticle in self.particles:
             newParticle = list(oldParticle)  # A list of ghost positions
 
             # now loop through and update each entry in newParticle...
-            "*** YOUR CODE HERE ***"
-            raiseNotDefined()
+            for i in range(self.numGhosts):
+                p = newParticle[i]
+                newPosDist = newPosDist = self.getPositionDistribution(gameState, newParticle, i, self.ghostAgents[i])
+                newParticle[i] = newPosDist.sample()
 
-            """*** END YOUR CODE HERE ***"""
             newParticles.append(tuple(newParticle))
         self.particles = newParticles
 
