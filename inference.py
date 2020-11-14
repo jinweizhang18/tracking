@@ -364,7 +364,7 @@ class ParticleFilter(InferenceModule):
         be reinitialized by calling initializeUniformly. The total method of
         the DiscreteDistribution may be useful.
         """
-        if self.getBeliefDistribution().total()==0 and self.getBeliefDistribution().argMax()==0:
+        if self.getBeliefDistribution().total() == 0:
             self.initializeUniformly()
         else:
             jail = self.getJailPosition()
@@ -372,17 +372,17 @@ class ParticleFilter(InferenceModule):
             beliefs = self.getBeliefDistribution()
             new = DiscreteDistribution()
             for p in self.allPositions:
-                numerator = beliefs[p] * self.getObservationProb(observation,pac,p,jail)
-                new[p] = numerator
-            new.normalize()
-            samples = [new.sample() for _ in range(self.numParticles)]
-            new_particles = []
-            for pos in self.allPositions:
-                if pos in self.legalPositions:
-                    n = samples.count(pos)
-                    new_particles.append(n)
+                if p in self.legalPositions:
+                    print(self.getObservationProb(observation,pac,p,jail))
+                    numerator = beliefs[p] * self.getObservationProb(observation,pac,p,jail)
+                    new[p] = numerator
                 else:
-                    new_particles.append(0)
+                    new[p] = 0
+
+            new.normalize()
+            samples = [new.sample() for _ in range(self.numParticles)] #A list of keys (positions)
+            self.particles = samples
+
 
     def elapseTime(self, gameState):
         """
@@ -403,8 +403,10 @@ class ParticleFilter(InferenceModule):
         d = DiscreteDistribution()
         for pos in self.particles:
             d[pos] = d[pos] + 1
+        assert(d.total()==self.numParticles)
 
         d.normalize()
+
         return d
 
 class JointParticleFilter(ParticleFilter):
