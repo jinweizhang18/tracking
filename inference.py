@@ -365,7 +365,7 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         if self.getBeliefDistribution().total() == 0:
-            self.initializeUniformly()
+            self.initializeUniformly(gameState)
         else:
             jail = self.getJailPosition()
             pac = gameState.getPacmanPosition()
@@ -373,15 +373,17 @@ class ParticleFilter(InferenceModule):
             new = DiscreteDistribution()
             for p in self.allPositions:
                 if p in self.legalPositions:
-                    print(self.getObservationProb(observation,pac,p,jail))
                     numerator = beliefs[p] * self.getObservationProb(observation,pac,p,jail)
                     new[p] = numerator
                 else:
                     new[p] = 0
 
             new.normalize()
-            samples = [new.sample() for _ in range(self.numParticles)] #A list of keys (positions)
-            self.particles = samples
+            if (new.total() == 0):
+                self.initializeUniformly(gameState)
+            else:
+                samples = [new.sample() for _ in range(self.numParticles)] #A list of keys (positions)
+                self.particles = samples
 
 
     def elapseTime(self, gameState):
