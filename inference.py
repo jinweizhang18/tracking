@@ -365,7 +365,7 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         if self.getBeliefDistribution().total() == 0:
-            self.initializeUniformly(gameState)
+            self.initializeUniformly(gigameState)
         else:
             jail = self.getJailPosition()
             pac = gameState.getPacmanPosition()
@@ -391,8 +391,15 @@ class ParticleFilter(InferenceModule):
         Sample each particle's next state based on its current state and the
         gameState.
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        newParticles = []
+        for oldPos in self.particles:
+            newPosDist = self.getPositionDistribution(gameState, oldPos)
+            sample = newPosDist.sample()
+            newParticles.append(sample)
+
+        self.particles = newParticles
+
+
 
     def getBeliefDistribution(self):
         """
